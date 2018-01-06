@@ -1,12 +1,10 @@
-TARGET = sum
+all : sum async_reduce
 
-all : $(TARGET)
+sum : sum.cu
+	nvcc $(INCLUDE) -o $@ $< $(LIBS)
 
-$(TARGET) : sum.cu
-	nvcc $(INCLUDE) -o $(TARGET) sum.cu $(LIBS) 
-
-run :
-	./sum
+async_reduce : async_reduce.cu
+	nvcc $(INCLUDE) -o $@ $< $(LIBS)
 
 clean :
-	rm -f $(TARGET)
+	rm -f sum async_reduce
