@@ -1,19 +1,7 @@
-all : sum max_element async_reduce inner_product async_max_element
+all: sum.exe max_element.exe async_reduce.exe inner_product.exe async_max_element.exe
 
-sum : sum.cu
-	nvcc $(INCLUDE) -o $@ $< $(LIBS)
-
-max_element : max_element.cu
-	nvcc $(INCLUDE) -o $@ $< $(LIBS)
-
-async_reduce : async_reduce.cu
-	nvcc $(INCLUDE) -o $@ $< $(LIBS)
-
-async_max_element : async_max_element.cu
-	nvcc $(INCLUDE) -o $@ $< $(LIBS)
-
-inner_product : inner_product.cu
-	nvcc $(INCLUDE) -o $@ $< $(LIBS)
+%.exe: %.cu
+	nvcc -o $@ $< $(LIBS)
 
 clean :
-	rm -f sum max_element async_reduce inner_product async_max_element
+	rm -f *.exe
