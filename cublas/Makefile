@@ -1,5 +1,5 @@
 LIBS = -lcublas
-all: gemm.exe
+all: gemm_f.exe gemm_c.exe
 
 %.exe: %.cu
 	nvcc -o $@ $< $(LIBS)
