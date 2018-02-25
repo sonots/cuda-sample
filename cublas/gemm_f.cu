@@ -9,7 +9,7 @@
 
 int main(void) {
     cublasHandle_t handle; // CUBLAS context
-    int i,j; // i-row index, j-column index
+    int i,j; // i-row valex, j-column valex
     float *a; // mxk matrix
     float *b; // kxn matrix
     float *c; // mxn matrix
@@ -18,14 +18,12 @@ int main(void) {
     cudaMallocManaged(&b, k*n*sizeof(cuComplex));
     cudaMallocManaged(&c, m*n*sizeof(cuComplex));
     // define an mxk matrix a column by column
-    int ind=0; // a:
-    for(j=0;j<k;j++){ // 11 ,17 ,23 ,29 ,35
-        for(i=0;i<m;i++){ // 12 ,18 ,24 ,30 ,36
-            a[IDX2C(i,j,m)]=(float)ind++; // 13 ,19 ,25 ,31 ,37
-        } // 14 ,20 ,26 ,32 ,38
-    } // 15 ,21 ,27 ,33 ,39
-    // 16 ,22 ,28 ,34 ,40
-    // print a row by row
+    int val=0; // a:
+    for (i=0;i<m;i++){
+        for (j=0;j<k;j++){
+            a[IDX2C(i,j,m)] = (float)val++;
+        }
+    }
     printf ("a:\n");
     for (i=0;i<m;i++){
         for (j=0;j<k;j++){
@@ -34,13 +32,12 @@ int main(void) {
         printf ("\n");
     }
     // define a kxn matrix b column by column
-    ind=0; // b:
-    for(j=0;j<n;j++){ // 11 ,16 ,21 ,26
-        for(i=0;i<k;i++){ // 12 ,17 ,22 ,27
-            b[IDX2C(i,j,k)]=(float)ind++; // 13 ,18 ,23 ,28
-        } // 14 ,19 ,24 ,29
-    } // 15 ,20 ,25 ,30
-    // print b row by row
+    val=0; // b:
+    for (i=0;i<k;i++){
+        for (j=0;j<n;j++){
+            b[IDX2C(i,j,k)] = (float)val++;
+        }
+    }
     printf ("b:\n");
     for (i=0;i<k;i++){
         for (j=0;j<n;j++){
@@ -49,14 +46,12 @@ int main(void) {
         printf ("\n");
     }
     // define an mxn matrix c column by column
-    ind=0; // c:
-    for(j=0;j<n;j++){ // 11 ,17 ,23 ,29
-        for(i=0;i<m;i++){ // 12 ,18 ,24 ,30
-            c[IDX2C(i,j,m)]=(float)ind++; // 13 ,19 ,25 ,31
-        } // 14 ,20 ,26 ,32
-    } // 15 ,21 ,27 ,33
-    // 16 ,22 ,28 ,34
-    // print c row by row
+    val=0; // c:
+    for (i=0;i<m;i++){
+        for (j=0;j<n;j++){
+            c[IDX2C(i,j,m)] = (float)0;
+        }
+    }
     printf ("c:\n");
     for (i=0;i<m;i++){
         for (j=0;j<n;j++){

@@ -5,8 +5,33 @@
 #define n 4 // b - kxn matrix
 #define k 5 // c - mxn matrix
 
-int main(void) {
+#define SWAP(a,b,tmp) { (tmp)=(a); (a)=(b); (b)=(tmp); }
+
+// https://www.christophlassner.de/using-blas-from-c-with-row-major-data.html
+void cublasRowMajorSgemm(float *a, float *b, float *c) {
+    int i,j; // i-row valex, j-column valex
     cublasHandle_t handle; // CUBLAS context
+    cublasCreate(&handle); // initialize CUBLAS context
+    float al=1.0f; // al =1
+    float bet=1.0f; // bet =1
+
+    // b^T = nxk matrix
+    // a^T = kxm matrix
+    // c^T = nxm matrix
+    // c^T = b^T * a^T
+
+    cublasSgemm(handle,CUBLAS_OP_N,CUBLAS_OP_N,n,m,k,&al,b,n,a,k,&bet,c,n);
+    cudaDeviceSynchronize();
+    printf ("c after Sgemm :\n");
+    for(i=0;i<m;i++){
+        for(j=0;j<n;j++){
+            printf("%7.0f",c[i*n+j]);
+        }
+        printf("\n");
+    }
+    cublasDestroy(handle); // destroy CUBLAS context
+}
+int main(void) {
     int i,j, ind; // i-row valex, j-column valex
     float *a; // mxk matrix
     float *b; // kxn matrix
@@ -39,7 +64,7 @@ int main(void) {
     }
     // define an mxn matrix c column by column
     val=0; // c:
-    for(i=0;i<m*n;i++){ c[i] = (float)val++; }
+    for(i=0;i<m*n;i++){ c[i] = (float)0; }
     printf ("c:\n");
     ind=0;
     for (i=0;i<m;i++){
@@ -48,24 +73,9 @@ int main(void) {
         }
         printf ("\n");
     }
-    cublasCreate(&handle); // initialize CUBLAS context
-    float al=1.0f; // al =1
-    float bet=1.0f; // bet =1
-    // matrix - matrix multiplication : c = al*a*b + bet *c
-    // a -mxk matrix , b -kxn matrix , c -mxn matrix ;
-    // al, bet - scalars
-    cublasSgemm(handle,CUBLAS_OP_N,CUBLAS_OP_N,m,n,k,&al,a,m,b,k,&bet,c,m);
-    cudaDeviceSynchronize();
-    printf ("c after Sgemm :\n");
-    for(i=0;i<m;i++){
-        for(j=0;j<n;j++){
-            printf("%7.0f",c[i*n+j]);
-        }
-        printf("\n");
-    }
+    cublasRowMajorSgemm(a, b, c);
     cudaFree(a); // free memory
     cudaFree(b); // free memory
     cudaFree(c); // free memory
-    cublasDestroy(handle); // destroy CUBLAS context
     return EXIT_SUCCESS ;
 }
