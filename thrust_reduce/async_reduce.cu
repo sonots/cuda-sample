@@ -8,6 +8,16 @@
 #include <future>
 #endif
 
+#include <sys/time.h>
+
+inline double seconds()
+{
+    struct timeval tp;
+    struct timezone tzp;
+    int i = gettimeofday(&tp, &tzp);
+    return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6);
+}
+
 // This example demonstrates two ways to achieve algorithm invocations that are asynchronous with
 // the calling thread.
 //
@@ -24,7 +34,7 @@
 template<typename Iterator, typename T, typename BinaryOperation, typename Pointer>
 __global__ void reduce_kernel(Iterator first, Iterator last, T init, BinaryOperation binary_op, Pointer result)
 {
-  *result = thrust::reduce(thrust::cuda::par, first, last, init, binary_op);
+    *result = thrust::reduce(thrust::device, first, last, init, binary_op);
 }
 
 int main()
@@ -40,8 +50,10 @@ int main()
   // cudaStreamCreate(&s);
 
   // synchrnize version
+  // sum is 1048576 elapsed 444.889 us
+  // double start = seconds();
   // int sum = thrust::reduce(thrust::device, data.begin(), data.end(), 0, thrust::plus<int>());
-  // std::cout << "sum is " << sum << std::endl;
+  // std::cout << "sum is " << sum << " elapsed " << (seconds() - start) * 1000000 << " us" << std::endl;
 
   // launch a CUDA kernel with only 1 thread on our stream
   // TODO(sonots): Why is this launch so slow?
