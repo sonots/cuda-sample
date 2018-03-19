@@ -3,6 +3,7 @@
 
 #include "carray.cuh"
 #include <stdio.h>
+#include <iostream>
 
 typedef long long type_in0_raw; typedef long long type_out0_raw;
 
@@ -115,7 +116,7 @@ int main() {
         cupy_sum<<<1, 512, 16384>>>(in_array, out_array, in_ind, out_ind, 1);
 
         cudaDeviceSynchronize();
-        printf("%ld\n", (long int)((dtype*)out_data)[0]);
+        std::cout << ((dtype*)out_data)[0] << std::endl;
     }
     {
         const int in_ndim = 1;
@@ -141,6 +142,6 @@ int main() {
         cupy_sum<<<1, 512, 16384>>>(in_array, out_array, in_ind, out_ind, 1);
 
         cudaDeviceSynchronize();
-        printf("%ld\n", (long int)((dtype*)out_data)[0]);
+        std::cout << ((dtype*)out_data)[0] << std::endl;
     }
 }
