@@ -2,6 +2,7 @@
 #include <thrust/reduce.h>
 #include <thrust/system/cuda/execution_policy.h>
 #include <cassert>
+#include <iostream>
 
 #if __cplusplus >= 201103L
 #include <future>
@@ -38,8 +39,12 @@ int main()
   // cudaStream_t s;
   // cudaStreamCreate(&s);
 
-  // // launch a CUDA kernel with only 1 thread on our stream
-  // reduce_kernel<<<1,1,0,s>>>(data.begin(), data.end(), 0, thrust::plus<int>(), result.data());
+  // synchrnize version
+  // int sum = thrust::reduce(thrust::device, data.begin(), data.end(), 0, thrust::plus<int>());
+  // std::cout << "sum is " << sum << std::endl;
+
+  // launch a CUDA kernel with only 1 thread on our stream
+  // TODO(sonots): Why is this launch so slow?
   reduce_kernel<<<1,1,0>>>(data.begin(), data.end(), 0, thrust::plus<int>(), result.data());
 
   // wait for the stream to finish
@@ -47,32 +52,32 @@ int main()
 
   // our result should be ready
   cudaDeviceSynchronize();
-  assert(result[0] == n);
+  // assert(result[0] == n);
 
   //cudaStreamDestroy(s);
 
   // reset the result
   result[0] = 0;
 
-#if __cplusplus >= 201103L
-  // method 2: use std::async to create asynchrony
-
-  // copy all the algorithm parameters
-  auto begin        = data.begin();
-  auto end          = data.end();
-  unsigned int init = 0;
-  auto binary_op    = thrust::plus<unsigned int>();
-
-  // std::async captures the algorithm parameters by value
-  // use std::launch::async to ensure the creation of a new thread
-  std::future<unsigned int> future_result = std::async(std::launch::async, [=]
-  {
-    return thrust::reduce(begin, end, init, binary_op);
-  });
-
-  // wait on the result and check that it is correct
-  assert(future_result.get() == n);
-#endif
+// #if __cplusplus >= 201103L
+//   // method 2: use std::async to create asynchrony
+// 
+//   // copy all the algorithm parameters
+//   auto begin        = data.begin();
+//   auto end          = data.end();
+//   unsigned int init = 0;
+//   auto binary_op    = thrust::plus<unsigned int>();
+// 
+//   // std::async captures the algorithm parameters by value
+//   // use std::launch::async to ensure the creation of a new thread
+//   std::future<unsigned int> future_result = std::async(std::launch::async, [=]
+//   {
+//     return thrust::reduce(begin, end, init, binary_op);
+//   });
+// 
+//   // wait on the result and check that it is correct
+//   assert(future_result.get() == n);
+// #endif
 
   return 0;
 }
