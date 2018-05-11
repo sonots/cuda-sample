@@ -1,4 +1,4 @@
-all: indexer1.ptx indexer2.ptx indexer3.ptx
+all: indexer1.ptx indexer2.ptx indexer3.ptx indexer4.ptx
 
 %.exe: %.cu
 	nvcc -o $@ $< $(LIBS)
