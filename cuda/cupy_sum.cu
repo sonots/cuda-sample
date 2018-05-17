@@ -16,12 +16,9 @@ typedef long long type_in0_raw; typedef long long type_out0_raw;
     }
 
 typedef long long _type_reduce;
-extern "C" __global__ void cupy_sum(
-        CArray<long long, 1> _raw_in0,
-        CArray<long long, 0> _raw_out0,
-        CIndexer<1> _in_ind,
-        CIndexer<0> _out_ind,
-        int _block_stride) {
+extern "C" __global__ void cupy_sum(CArray<float, 1> _raw_in0, CArray<float, 0> _raw_out0, CIndexer<1> _in_ind, CIndexer<0> _out_ind, int _block_stride) {
+// extern "C" __global__ void cupy_sum(CArray<float, 2> _raw_in0, CArray<float, 1> _raw_out0, CIndexer<2> _in_ind, CIndexer<1> _out_ind, int _block_stride) {
+// extern "C" __global__ void cupy_sum(CArray<float, 3> _raw_in0, CArray<float, 1> _raw_out0, CIndexer<3> _in_ind, CIndexer<1> _out_ind, int _block_stride) {
     extern __shared__ _type_reduce _sdata_raw[];
     _type_reduce *_sdata = _sdata_raw;
     unsigned int _tid = threadIdx.x;
